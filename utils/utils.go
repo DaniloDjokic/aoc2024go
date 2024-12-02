@@ -9,8 +9,8 @@ import (
 type Day interface {
 	Id() int
 	LoadFile(isTest bool) []string
-	Run1(lines []string) (int, error)
-	Run2(lines []string) (int, error)
+	Part1(lines []string) (int, error)
+	Part2(lines []string) (int, error)
 }
 
 func LoadFile(isTest bool, dayId int) []string {

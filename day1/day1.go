@@ -6,9 +6,7 @@ import (
 	"strings"
 )
 
-type Day1 struct {
-	id int
-}
+type Day1 struct{}
 
 func (d Day1) Id() int {
 	return 1
@@ -18,11 +16,11 @@ func (d Day1) LoadFile(isTest bool) []string {
 	return utils.LoadFile(isTest, 1)
 }
 
-func (d Day1) Run1(lines []string) (int, error) {
+func (d Day1) Part1(lines []string) (int, error) {
 	panic("Not implemented")
 }
 
-func (d Day1) Run2(lines []string) (int, error) {
+func (d Day1) Part2(lines []string) (int, error) {
 	var leftInts []int
 	rightInts := make(map[int]int)
 

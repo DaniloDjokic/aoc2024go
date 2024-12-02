@@ -1,16 +1,16 @@
 package main
 
 import (
-	"aoc2024go/day1"
+	"aoc2024go/day2"
 	"aoc2024go/utils"
 	"fmt"
 	"time"
 )
 
 func main() {
-	day := day1.Day1{}
+	day := day2.Day2{}
 
-	isPart1 := false
+	isPart1 := true
 	isTest := false
 
 	result := runSolution(day, isTest, isPart1)
@@ -41,9 +41,9 @@ func runSolution(day utils.Day, isTest bool, isPart1 bool) int {
 
 	var err error
 	if isPart1 {
-		result, err = day.Run1(lines)
+		result, err = day.Part1(lines)
 	} else {
-		result, err = day.Run2(lines)
+		result, err = day.Part2(lines)
 	}
 
 	if err != nil {
