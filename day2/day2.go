@@ -33,14 +33,14 @@ func (d Day2) Part1(lines []string) (int, error) {
 			}
 		}
 
-		safety := getSafety(nums)
+		safety := getSafety1(nums)
 		totalSafety += safety
 	}
 
 	return totalSafety, nil
 }
 
-func getSafety(nums []int) int {
+func getSafety1(nums []int) int {
 	dir := 0 //-1, 0, 1
 	prev := nums[0]
 
@@ -75,5 +75,43 @@ func getSafety(nums []int) int {
 }
 
 func (d Day2) Part2(lines []string) (int, error) {
-	panic("Not implemented")
+	totalSafety := 0
+	for _, line := range lines {
+		numStrings := strings.Split(line, " ")
+		nums := make([]int, len(numStrings))
+
+		var err error
+		for i, s := range numStrings {
+			nums[i], err = strconv.Atoi(s)
+
+			if err != nil {
+				panic(fmt.Sprintf("Somehow, %s is not an int", s))
+			}
+		}
+
+		safety := getSafety2(nums)
+		fmt.Println(fmt.Sprintf(" Safety: %d", safety))
+		totalSafety += safety
+	}
+
+	return totalSafety, nil
+}
+func getSafety2(nums []int) int {
+	fmt.Print(nums)
+	for i := range nums {
+		subSlice := removeElement(nums, i)
+		subSafety := getSafety1(subSlice)
+
+		if subSafety == 1 {
+			return 1
+		}
+	}
+	return 0
+}
+
+func removeElement(input []int, index int) []int {
+	result := make([]int, len(input)-1)
+	copy(result[:index], input[:index])
+	copy(result[index:], input[index+1:])
+	return result
 }
