@@ -90,14 +90,14 @@ func (d Day2) Part2(lines []string) (int, error) {
 		}
 
 		safety := getSafety2(nums)
-		fmt.Println(fmt.Sprintf(" Safety: %d", safety))
+		//fmt.Println(fmt.Sprintf(" Safety: %d", safety))
 		totalSafety += safety
 	}
 
 	return totalSafety, nil
 }
 func getSafety2(nums []int) int {
-	fmt.Print(nums)
+	//fmt.Print(nums)
 	for i := range nums {
 		subSlice := removeElement(nums, i)
 		subSafety := getSafety1(subSlice)
