@@ -11,7 +11,14 @@ type Parser struct {
 	parsingMul, parsingLeft, parsingRight bool
 	left, right                           int
 	parsedSingle                          bool
-	results                               []int
+	results                               []Result
+	mulMode                               bool
+	parsingMulMode                        bool
+}
+
+type Result struct {
+	val     int
+	enabled bool
 }
 
 func NewParser() *Parser {
@@ -19,6 +26,7 @@ func NewParser() *Parser {
 	parser.currentExpression = ""
 	parser.allowedExpressions = make(map[string]bool)
 	parser.allowedExpressions["mul"] = true
+	parser.mulMode = true
 	return &parser
 }
 
@@ -65,7 +73,7 @@ func (p *Parser) AddCharacter(char rune) {
 		p.parsingLeft = false
 		p.parsingMul = false
 		p.parsedSingle = false
-		p.results = append(p.results, p.left*p.right)
+		p.results = append(p.results, Result{val: p.left * p.right, enabled: p.mulMode})
 		p.left = 0
 		p.right = 0
 		p.currentExpression = ""
@@ -73,6 +81,12 @@ func (p *Parser) AddCharacter(char rune) {
 }
 
 func (p *Parser) EvalCharacter(c rune) bool {
+	p.EvalMulMode(c)
+
+	if p.parsingMulMode {
+		return true
+	}
+
 	if p.parsingMul {
 		if c == '(' {
 			return true
@@ -113,6 +127,57 @@ func (p *Parser) EvalCharacter(c rune) bool {
 	}
 
 	return p.EvalAny(c)
+}
+
+func (p *Parser) EvalMulMode(c rune) {
+	p.parsingMulMode = false
+
+	if c == 'd' {
+		p.parsingMulMode = true
+		return
+	}
+
+	if p.currentExpression == "d" && c == 'o' {
+		p.parsingMulMode = true
+		return
+	}
+
+	if p.currentExpression == "do" && c == '(' {
+		p.parsingMulMode = true
+		return
+	}
+
+	if p.currentExpression == "do(" && c == ')' {
+		p.mulMode = true
+		p.currentExpression = ""
+		return
+	}
+
+	if p.currentExpression == "do" && c == 'n' {
+		p.parsingMulMode = true
+		return
+	}
+
+	if p.currentExpression == "don" && c == '\'' {
+		p.parsingMulMode = true
+		return
+	}
+
+	if p.currentExpression == "don'" && c == 't' {
+		p.parsingMulMode = true
+		return
+	}
+
+	if p.currentExpression == "don't" && c == '(' {
+		p.parsingMulMode = true
+		return
+	}
+
+	if p.currentExpression == "don't(" && c == ')' {
+		p.mulMode = false
+		p.currentExpression = ""
+		return
+	}
 }
 
 func (p *Parser) EvalAny(c rune) bool {

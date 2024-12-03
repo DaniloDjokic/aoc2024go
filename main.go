@@ -10,7 +10,7 @@ import (
 func main() {
 	day := day3.Day3{}
 
-	isPart1 := true
+	isPart1 := false
 	isTest := false
 
 	result := runSolution(day, isTest, isPart1)
