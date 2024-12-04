@@ -34,3 +34,16 @@ func LoadFile(isTest bool, dayId int) []string {
 
 	return lines
 }
+
+func ConvertToCharArray(lines []string) [][]rune {
+	res := make([][]rune, len(lines))
+
+	for i, line := range lines {
+		res[i] = []rune(line)
+		for j, c := range line {
+			res[i][j] = c
+		}
+	}
+
+	return res
+}
