@@ -112,4 +112,60 @@ func validateBounds(i int, j int, height int, width int) bool {
 	return i >= 0 && i < width && j >= 0 && j < height
 }
 
-func (d Day4) Part2(lines []string) (int, error) { panic("Not implemented") }
+func (d Day4) Part2(lines []string) (int, error) {
+	matrix := utils.ConvertToCharArray(lines)
+	total := 0
+	height := len(matrix)
+	width := len(matrix[0])
+
+	for i := range matrix {
+		for j := range matrix[i] {
+			if matrix[i][j] == 'A' {
+				if isInRange(i, j, height, width) {
+					if testXmas(i, j, matrix) {
+						total++
+					}
+				}
+			}
+		}
+	}
+
+	return total, nil
+}
+
+func testXmas(i int, j int, matrix [][]rune) bool {
+	topLeft := matrix[i-1][j-1]
+	topRight := matrix[i-1][j+1]
+	botLeft := matrix[i+1][j-1]
+	botRight := matrix[i+1][j+1]
+
+	if topLeft == 'M' && topRight == 'M' {
+		if botLeft == 'S' && botRight == 'S' {
+			return true
+		}
+	}
+
+	if botLeft == 'M' && botRight == 'M' {
+		if topLeft == 'S' && topRight == 'S' {
+			return true
+		}
+	}
+
+	if topLeft == 'M' && botLeft == 'M' {
+		if topRight == 'S' && botRight == 'S' {
+			return true
+		}
+	}
+
+	if topRight == 'M' && botRight == 'M' {
+		if topLeft == 'S' && botLeft == 'S' {
+			return true
+		}
+	}
+
+	return false
+}
+
+func isInRange(i int, j int, length int, width int) bool {
+	return i > 0 && i < length-1 && j > 0 && j < width-1
+}
