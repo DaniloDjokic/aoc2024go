@@ -2,6 +2,7 @@ package day5
 
 import (
 	"aoc2024go/utils"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -33,7 +34,7 @@ func (d Day5) Part1(lines []string) (int, error) {
 
 			biggerThanSet, ok := comp[left]
 			if ok {
-				for key, _ := range biggerThanSet {
+				for key := range biggerThanSet {
 					if _, ok := alreadySeen[key]; ok {
 						validLine = false
 					}
@@ -78,4 +79,57 @@ func (d Day5) ProcessMapping(lines []string) (map[int]map[int]bool, int) {
 	panic("How?")
 }
 
-func (d Day5) Part2(lines []string) (int, error) { panic("Not implemented") }
+func (d Day5) Part2(lines []string) (int, error) {
+	comp, br := d.ProcessMapping(lines)
+	total := 0
+
+	for i := br + 1; i < len(lines); i++ { //Process commands
+		arr := make([]int, 0, 23)
+
+		line := lines[i]
+		split := strings.Split(line, ",")
+
+		for i := 0; i < len(split); i++ {
+			numS := split[i]
+			left, _ := strconv.Atoi(numS)
+			arr = append(arr, left)
+		}
+
+		validLine := true
+
+		var lineChangeCount int
+		for {
+			lineChangeCount = 0
+			for k, left := range arr { // loop comma delimiter numbers
+				biggerThanSet, ok := comp[left]
+
+				if ok {
+					for j := 0; j < k; j++ { //start from beginning to find the first number in biggerThanSet
+						compare := arr[j]
+
+						if _, ok := biggerThanSet[compare]; ok {
+							validLine = false
+							lineChangeCount++
+
+							arr = append(arr[:k], arr[k+1:]...)
+							arr = slices.Insert(arr, j, left)
+
+							break
+						}
+					}
+				}
+			}
+
+			if lineChangeCount == 0 {
+				break
+			}
+		}
+
+		if !validLine {
+			middleNum := arr[len(arr)/2]
+			total += middleNum
+		}
+	}
+
+	return total, nil
+}
