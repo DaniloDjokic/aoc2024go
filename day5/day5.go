@@ -97,31 +97,22 @@ func (d Day5) Part2(lines []string) (int, error) {
 
 		validLine := true
 
-		var lineChangeCount int
-		for {
-			lineChangeCount = 0
-			for k, left := range arr { // loop comma delimiter numbers
-				biggerThanSet, ok := comp[left]
+		for k, left := range arr { // loop comma delimiter numbers
+			biggerThanSet, ok := comp[left]
 
-				if ok {
-					for j := 0; j < k; j++ { //start from beginning to find the first number in biggerThanSet
-						compare := arr[j]
+			if ok {
+				for j := 0; j < k; j++ { //start from beginning to find the first number in biggerThanSet
+					compare := arr[j]
 
-						if _, ok := biggerThanSet[compare]; ok {
-							validLine = false
-							lineChangeCount++
+					if _, ok := biggerThanSet[compare]; ok {
+						validLine = false
 
-							arr = append(arr[:k], arr[k+1:]...)
-							arr = slices.Insert(arr, j, left)
+						arr = append(arr[:k], arr[k+1:]...)
+						arr = slices.Insert(arr, j, left)
 
-							break
-						}
+						break
 					}
 				}
-			}
-
-			if lineChangeCount == 0 {
-				break
 			}
 		}
 

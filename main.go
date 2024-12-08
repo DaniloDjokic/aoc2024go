@@ -1,16 +1,16 @@
 package main
 
 import (
-	"aoc2024go/day5"
+	"aoc2024go/day6"
 	"aoc2024go/utils"
 	"fmt"
 	"time"
 )
 
 func main() {
-	day := day5.Day5{}
+	day := day6.Day6{}
 
-	isPart1 := false
+	isPart1 := true
 	isTest := false
 
 	result := runSolution(day, isTest, isPart1)
