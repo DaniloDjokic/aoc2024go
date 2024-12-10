@@ -53,8 +53,38 @@ type Coordinate struct {
 	X, Y int
 }
 
+func (c Coordinate) IsOnLine(l Line) bool {
+	a := l.Start
+	b := l.End
+
+	if (l.Start.X == l.End.X && l.Start.X == c.X) || (l.Start.Y == l.End.Y && l.Start.Y == c.Y) {
+		distA := int(distance(a, c))
+		distB := int(distance(b, c))
+		distC := int(distance(a, b))
+
+		return distA+distB == distC
+	}
+
+	return false
+}
+
 type Line struct {
 	Start, End Coordinate
+}
+
+func (l Line) Equal(other Line) bool {
+	if l.Start.X == other.Start.X && l.Start.Y == other.Start.Y {
+		if l.End.X == other.End.X && l.End.Y == other.End.Y {
+			return true
+		}
+	}
+	return false
+}
+
+func distance(c1 Coordinate, c2 Coordinate) float64 {
+	x := math.Pow(math.Abs(float64(c1.X-c2.X)), 2)
+	y := math.Pow(math.Abs(float64(c1.Y-c2.Y)), 2)
+	return math.Sqrt(x + y)
 }
 
 func (l Line) Value() float64 {
@@ -63,6 +93,25 @@ func (l Line) Value() float64 {
 	return math.Sqrt(x+y) + 1
 }
 
+func (l Line) LineDirection() int {
+	if l.Start.X == l.End.X {
+		if l.Start.Y < l.End.Y {
+			return Right
+		} else {
+			return Left
+		}
+	}
+
+	if l.Start.Y == l.End.Y {
+		if l.Start.X > l.End.X {
+			return Top
+		} else {
+			return Bot
+		}
+	}
+
+	panic("Line is diagonal, shouldn't happen yet")
+}
 func (l Line) Crosses(other Line) bool {
 	o1 := orientation(l.Start, l.End, other.Start)
 	o2 := orientation(l.Start, l.End, other.End)
