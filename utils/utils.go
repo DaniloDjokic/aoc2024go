@@ -36,6 +36,10 @@ func LoadFile(isTest bool, dayId int) []string {
 	return lines
 }
 
+func IsOffMap(curr Coordinate, dimX, dimY int) bool {
+	return curr.X >= dimX || curr.Y >= dimY || curr.X < 0 || curr.Y < 0
+}
+
 func ConvertToCharArray(lines []string) [][]rune {
 	res := make([][]rune, len(lines))
 
