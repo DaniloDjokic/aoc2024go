@@ -40,6 +40,10 @@ func IsOffMap(curr Coordinate, dimX, dimY int) bool {
 	return curr.X >= dimX || curr.Y >= dimY || curr.X < 0 || curr.Y < 0
 }
 
+func IsOffMapRaw(i, j, dimX, dimY int) bool {
+	return i >= dimX || j >= dimY || i < 0 || j < 0
+}
+
 func ConvertToCharArray(lines []string) [][]rune {
 	res := make([][]rune, len(lines))
 
