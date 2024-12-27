@@ -11,7 +11,7 @@ func main() {
 	day := day11.Day11{}
 
 	isPart1 := false
-	isTest := true
+	isTest := false
 
 	result := runSolution(day, isTest, isPart1)
 
