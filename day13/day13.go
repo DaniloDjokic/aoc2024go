@@ -3,7 +3,6 @@ package day13
 import (
 	"aoc2024go/utils"
 	"errors"
-	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -25,17 +24,19 @@ type Machine struct {
 	BtnAOffsetX, BtnAOffsetY, BtnBOffsetX, BtnBOffsetY, PrizeX, PrizeY int
 }
 
+const OFFSET = 10000000000000
+
 func (d Day13) Part1(lines []string) (int, error) {
 	machines := parseMachines(lines)
 
 	total := 0
 
-	for i, m := range machines {
+	for _, m := range machines {
 		a, b, err := m.solve()
 		if err != nil {
-			fmt.Printf("Machine %d has no solution, %s\n", i+1, err.Error())
+			// fmt.Printf("Machine %d has no solution, %s\n", i+1, err.Error())
 		} else {
-			fmt.Printf("Machine %d: A=%d, B=%d\n", i+1, a, b)
+			// fmt.Printf("Machine %d: A=%d, B=%d\n", i+1, a, b)
 			total += 3*a + b
 		}
 	}
@@ -90,8 +91,8 @@ func parseMachines(lines []string) []Machine {
 			prizeYString := line[equals2+1:]
 			prizeX, _ := strconv.Atoi(prizeXString)
 			prizeY, _ := strconv.Atoi(prizeYString)
-			machine.PrizeX = prizeX
-			machine.PrizeY = prizeY
+			machine.PrizeX = prizeX + OFFSET
+			machine.PrizeY = prizeY + OFFSET
 		}
 
 		rowNum++
@@ -123,12 +124,8 @@ func (m *Machine) solve() (int, int, error) {
 			return 0, 0, errors.New("No solution for equation, number is negative")
 		}
 
-		if !isWholeNumber(v, 1e-6) {
+		if !isWholeNumber(v, 1e-5) {
 			return 0, 0, errors.New("No solution for equation")
-		}
-
-		if v > 100 {
-			return 0, 0, errors.New("No solution smaller than 101")
 		}
 	}
 
@@ -136,10 +133,6 @@ func (m *Machine) solve() (int, int, error) {
 }
 
 func isWholeNumber(f float64, tolerance float64) bool {
-	// rounded := math.Round(f)
-	// left := f - rounded
-	// res := math.Abs(left) < tolerance
-	// return res
 	return math.Abs(f-math.Round(f)) < tolerance
 }
 
