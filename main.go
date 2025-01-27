@@ -11,7 +11,7 @@ func main() {
 	day := day13.Day13{}
 
 	isPart1 := true
-	isTest := true
+	isTest := false
 
 	result := runSolution(day, isTest, isPart1)
 
@@ -29,7 +29,13 @@ func main() {
 		testLabel = "real input"
 	}
 
-	fmt.Println(fmt.Sprintf("The result for day%d, %s, %s is %d ", day.Id(), partLabel, testLabel, result))
+	fmt.Printf(
+		"The result for day%d, %s, %s is %d \n",
+		day.Id(),
+		partLabel,
+		testLabel,
+		result,
+	)
 }
 
 func runSolution(day utils.Day, isTest bool, isPart1 bool) int {

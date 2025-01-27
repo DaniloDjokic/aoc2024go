@@ -2,9 +2,13 @@ package day13
 
 import (
 	"aoc2024go/utils"
+	"errors"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 type Day13 struct{}
@@ -26,14 +30,13 @@ func (d Day13) Part1(lines []string) (int, error) {
 
 	total := 0
 
-	for _, m := range machines {
-		xEquation := SolveDiophantine(m.BtnAOffsetX, m.BtnBOffsetX, m.PrizeX)
-
-		if xEquation.HasSolution {
-			solutions := xEquation.GetSolutionInRange(1, 100)
-			for _, s := range solutions {
-				fmt.Println(s)
-			}
+	for i, m := range machines {
+		a, b, err := m.solve()
+		if err != nil {
+			fmt.Printf("Machine %d has no solution, %s\n", i+1, err.Error())
+		} else {
+			fmt.Printf("Machine %d: A=%d, B=%d\n", i+1, a, b)
+			total += 3*a + b
 		}
 	}
 
@@ -45,7 +48,12 @@ func parseMachines(lines []string) []Machine {
 
 	machine := Machine{}
 	rowNum := 1
-	for _, line := range lines {
+
+	for i, line := range lines {
+		if i == len(lines)-1 {
+			continue
+		}
+
 		if len(line) == 0 {
 			machines = append(machines, machine)
 			machine = Machine{}
@@ -89,84 +97,50 @@ func parseMachines(lines []string) []Machine {
 		rowNum++
 	}
 
-	//for _, machine := range machines {
-	//	fmt.Println(machine)
-	//}
-
 	return machines
 }
 
-func extendedGCD(a, b int) (gcd, x, y int) {
-	if b == 0 {
-		return a, 1, 0
+func (m *Machine) solve() (int, int, error) {
+	A := mat.NewDense(
+		2,
+		2,
+		[]float64{
+			float64(m.BtnAOffsetX),
+			float64(m.BtnBOffsetX),
+			float64(m.BtnAOffsetY),
+			float64(m.BtnBOffsetY),
+		},
+	)
+	B := mat.NewVecDense(2, []float64{float64(m.PrizeX), float64(m.PrizeY)})
+
+	var x mat.VecDense
+	if err := x.SolveVec(A, B); err != nil {
+		panic(err)
 	}
 
-	d, x1, y1 := extendedGCD(b, a%b)
-	return d, y1, x1 - (a/b)*y1
-}
+	for _, v := range x.RawVector().Data {
+		if v < 0 {
+			return 0, 0, errors.New("No solution for equation, number is negative")
+		}
 
-type Solution struct {
-	X0, Y0       int
-	XStep, YStep int
-	HasSolution  bool
-}
+		if !isWholeNumber(v, 1e-6) {
+			return 0, 0, errors.New("No solution for equation")
+		}
 
-func SolveDiophantine(a, b, c int) Solution {
-	gcd, x0, y0 := extendedGCD(a, b)
-
-	if c%gcd != 0 {
-		return Solution{HasSolution: false}
-	}
-
-	factor := c / gcd
-	return Solution{
-		X0:          x0 * factor,
-		Y0:          y0 * factor,
-		XStep:       b / gcd,
-		YStep:       -a / gcd,
-		HasSolution: true,
-	}
-}
-
-func (s Solution) GetSolution(t int) (x, y int) {
-	if !s.HasSolution {
-		return 0, 0
-	}
-
-	return s.X0 + s.XStep*t, s.Y0 + s.YStep*t
-}
-
-func (s Solution) GetSolutionInRange(minXY, maxXY int) []struct{ X, Y int } {
-	if !s.HasSolution {
-		return nil
-	}
-
-	var solutions []struct{ X, Y int }
-
-	tMin := max((minXY-s.X0)/s.XStep, (s.Y0-maxXY)/s.YStep)
-	tMax := min((maxXY-s.X0)/s.XStep, (s.Y0-minXY)/s.YStep)
-
-	for t := tMin; t <= tMax; t++ {
-		x, y := s.GetSolution(t)
-		if x >= minXY && x <= maxXY && y >= minXY && y <= maxXY {
-			solutions = append(solutions, struct{ X, Y int }{x, y})
+		if v > 100 {
+			return 0, 0, errors.New("No solution smaller than 101")
 		}
 	}
 
-	return solutions
-}
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
+	return int(math.Round(x.At(0, 0))), int(math.Round(x.At(1, 0))), nil
 }
 
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
+func isWholeNumber(f float64, tolerance float64) bool {
+	// rounded := math.Round(f)
+	// left := f - rounded
+	// res := math.Abs(left) < tolerance
+	// return res
+	return math.Abs(f-math.Round(f)) < tolerance
 }
 
 func (d Day13) Part2(lines []string) (int, error) { panic("A") }
